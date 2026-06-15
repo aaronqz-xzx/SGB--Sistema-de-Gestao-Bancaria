@@ -3,7 +3,7 @@
 
 
 #define NAME_SIZE 50
-#define HASH_TAMANHO 101
+#define HASH_SIZE 101
 #define GRAU_MINIMO 3
 #define MAX_CHAVES (2 * GRAU_MINIMO - 1)
 #define MAX_FILHOS (2 * GRAU_MINIMO)
@@ -11,7 +11,7 @@
 typedef enum {
     MOVIMENTO_DEPOSITO,
     MOVIMENTO_LEVANTAMENTO,
-    MOVIMENTO_TRABSFERENCIA_ENTRADA,
+    MOVIMENTO_TRANSFERENCIA_ENTRADA,
     MOVIMENTO_TRANSFERENCIA_SAIDA
 }TipoMovimento;
 
@@ -46,7 +46,7 @@ typedef struct NoHash {
 
 typedef struct Banco {
     NoB *raiz;
-    NoHash *hash[HASH_TAMANHO];
+    NoHash *hash[HASH_SIZE];
     int totalContas;
 } Banco;
 
