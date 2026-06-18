@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "gb.h"
+#include "banco.h"
 
-<<<<<<< HEAD
+
 static int ler_inteiro(const char *mensagem, int valor) {
     printf("%s", mensagem);
     if (scanf("%d", valor) != 1){
@@ -43,52 +44,230 @@ static void menu(void){
     printf("Escolha uma opcao: ");
 }
 
-static void criarconta(Banco *banco) {
-    
-=======
-int main(){
+static void criar_conta(Banco *banco) {
+    char titular[NAME_SIZE];
+    int numero, nif;
+    double saldo;
 
-    int opcao;
+    printf("Digite o nome do titular: ");
+    scanf("%49s", titular);
+    if (!ler_inteiro("Numero da conta: ", &numero) ||
+        !ler_inteiro("NIF: ", &nif) ||
+        !ler_double("Saldo inicial: ", &saldo)) {
+        printf("Entrada invalida. Conta nao criada.\n");
+        return;
+    }
 
-    printf("====== Menu Bancario ========\n");
-    printf("1. Criar Conta\n");
-    printf("2. Actualizar conta\n");
-    printf("3. Consultar Saldo\n");
-    printf("4. Depositar\n");
-    printf("5. Levantar\n");
-    printf("6. Transferir\n");
-    printf("7. Pesquisar por NIF\n");
-    printf("8. Sair\n");
-    scanf("%d", &opcao);
+    if (banco_criar_conta(banco, titular, numero, nif, saldo)) {
+        printf("Conta criada com sucesso!\n");
+    } else {
+        printf("Erro ao criar conta. Verifique os dados e tente novamente.\n");
+    }
+}
 
-    while(opcao != 8){
-        switch(opcao){
+static void consultar_por_numero(Banco *banco) {
+    int numero;
+    Conta *conta;
+
+    if (!ler_inteiro("Digite o numero da conta: ", &numero)) {
+        printf("Entrada invalida.\n");
+        return;
+    }
+
+    conta = banco_buscar_por_numero(banco, numero);
+    if (conta == NULL) {
+        printf("Conta nao encontrada.\n");
+        return;
+    }
+
+    printf("Titular: %s | NIF: %d | Saldo: %.2f AOA\n",
+        conta->titular,
+        conta->nif,
+        conta->saldo);
+}
+
+static void pesquisar_por_nif(Banco *banco) {
+    int nif;
+    Conta *conta;
+
+    if (!ler_inteiro("NIF: ", &nif)) {
+        printf("Entrada invalida.\n");
+        return;
+    }
+
+    conta = banco_buscar_por_nif(banco, nif);
+    if (conta == NULL) {
+        printf("Conta nao encontrada.\n");
+        return;
+    }
+
+    printf("Numero: %d | Titular: %s | Saldo: %.2f AOA\n",
+        conta->numero,
+        conta->titular,
+        conta->saldo);
+}
+
+static void actualizar_conta(Banco *banco) {
+    int numero;
+    int nif;
+    char titular[NAME_SIZE];
+
+    if (!ler_inteiro("Numero da conta: ", &numero)) {
+        printf("Entrada Invalida.\n");
+        return;
+    }
+
+    printf("Novo titular (Sem espacos): ");
+    scanf("%49s", titular);
+
+    if(!ler_inteiro("Novo NIF: ", &nif)) {
+        printf("Entrada Invalida.\n");
+        return;
+    }
+
+    if (banco_actualizar_conta(banco, numero, titular, nif)) {
+        printf("Conta atualizada com sucesso.\n");
+    } else {
+        printf("Nap foi possivel actualizar.Conta inexistente ou NIF duplicado.\n");
+    }
+}
+
+static void operar_valor(Banco *banco, int deposito) {
+    int numero;
+    double valor;
+    int sucesso;
+
+    if (!ler_inteiro("Numero da conta: ", &numero) ||
+        !ler_double("Valor: ", &valor)) {
+        printf("Entrada invalida.\n");
+        return;
+    }
+
+    sucesso = deposito ? banco_depositar(banco, numero, valor) : banco_levantar(banco, numero, valor);
+
+    if (sucesso) {
+        printf("Operacao realizada com sucesso.\n");
+    } else {
+        printf("Operacao recusada. Verifique conta, valor e saldo disponivel.\n");
+    }
+}
+
+static void transferir(Banco *banco) {
+    int origem;
+    int destino;
+    double valor;
+
+    if (!ler_inteiro("Conta de origem: ", &origem) ||
+        !ler_inteiro("Conta de destino: ", &destino) ||
+        !ler_double("Valor: ", &valor)) {
+        printf("Entrada invalida.\n");
+        return;
+    }
+
+    if (banco_transferir(banco, origem, destino, valor)) {
+        printf("Transferencia realizada com sucesso.\n");
+    } else {
+        printf("Transferencia recusada. Verifique contas, valor e saldo.\n");
+    }
+}
+
+static void carregar_ficheiro(Banco *banco) {
+    char caminho[120];
+    int inseridas;
+
+    printf("Caminho do ficheiro: ");
+    scanf("%119s", caminho);
+
+    inseridas = banco_carregar_contas(banco, caminho);
+    if (inseridas < 0) {
+        printf("Nao foi possivel abrir o ficheiro.\n");
+    } else {
+        printf("%d conta(s) carregada(s).\n", inseridas);
+    }
+}
+
+static void guardar_relatorio(Banco *banco) {
+    char caminho[120];
+
+    printf("Caminho do relatorio: ");
+    scanf("%119s", caminho);
+
+    if (banco_guardar_relatorio(banco, caminho)) {
+        printf("Relatorio guardado com sucesso.\n");
+    } else {
+        printf("Nao foi possivel guardar o relatorio.\n");
+    }
+}
+
+int main(void) {
+    Banco banco;
+    int opcao = -1;
+
+    banco_inicializar(&banco);
+
+    do {
+        menu();
+
+        if (scanf("%d", &opcao) != 1) {
+            int c;
+            while ((c = getchar()) != '\n' && c != EOF) {
+            }
+            printf("Opcao invalida.\n");
+            continue;
+        }
+
+        switch (opcao) {
             case 1:
-                criarConta();
+                criar_conta_manual(&banco);
                 break;
             case 2:
-                actualizarConta();
+                carregar_ficheiro(&banco);
                 break;
             case 3:
-                consultarSaldo();
+                actualizar_conta(&banco);
                 break;
             case 4:
-                depositar();
+                consultar_por_numero(&banco);
                 break;
             case 5:
-                levantar();
+                operar_valor(&banco, 1);
                 break;
             case 6:
-                transferir();
+                operar_valor(&banco, 0);
                 break;
             case 7:
-                pesquisarPorNIF();
+                transferir(&banco);
+                break;
+            case 8:
+                pesquisar_por_nif(&banco);
+                break;
+            case 9:
+                banco_listar_contas(&banco);
+                break;
+            case 10: {
+                int numero;
+                if (ler_inteiro("Numero da conta: ", &numero)) {
+                    banco_mostrar_extrato(&banco, numero);
+                } else {
+                    printf("Entrada invalida.\n");
+                }
+                break;
+            }
+            case 11:
+                banco_mostrar_estatisticas(&banco);
+                break;
+            case 12:
+                guardar_relatorio(&banco);
+                break;
+            case 0:
+                printf("A terminar o sistema...\n");
                 break;
             default:
-                printf("Opcao invalida. Tente novamente.\n");
+                printf("Opcao invalida.\n");
+                break;
         }
-    
-    }
+    } while (opcao != 0);
+
+    banco_liberar(&banco);
     return 0;
->>>>>>> 90e812f (primeiras adicioes)
 }
