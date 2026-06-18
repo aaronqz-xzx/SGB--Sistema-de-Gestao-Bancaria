@@ -19,7 +19,7 @@ typedef struct Movimento {
     char dataHora[20];
     TipoMovimento tipo;
     double valor;
-    double saldosApos;
+    double saldosApps;
     struct Movimento *proximo;
 }Movimento;
 
@@ -28,12 +28,13 @@ typedef struct Conta {
     int nif;
     char titular[NAME_SIZE];
     double saldo;
-    Movimento *movimento;
+    int totalMovimentos;
+    Movimento *movimentos;
 } Conta;
 
 typedef struct NoB {
     int quantidade;
-    int follha;
+    int folha;
     Conta *contas[MAX_CHAVES];
     struct NoB *filhos[MAX_FILHOS];
 }NoB;

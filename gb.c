@@ -40,11 +40,9 @@ int inserir(hash *h, int chave) {
         return 0; // Tabela cheia
     }
 
-<<<<<<< HEAD
+
     if (pesquisarIndice(h, chave) != -1) {
-=======
     if (pesquisar(h, chave) != -1) {
->>>>>>> 90e812f (primeiras adicioes)
         return 0; // Chave já existe
     }
 
@@ -53,7 +51,6 @@ int inserir(hash *h, int chave) {
 
     for (int i = 0; i < HASH_SIZE; i++) {
         int indice = (InitialIndex + i) % HASH_SIZE;
-<<<<<<< HEAD
 
         if (h->entradas[indice].estado == REMOVIDO && primeiroRemovido == -1) {
             primeiroRemovido = indice;
@@ -81,9 +78,9 @@ int inserir(hash *h, int chave) {
     return 0;
 }
 
-int remover (hash *tabela, int chave) {
+int remover(hash *tabela, int chave) {
     int indice = pesquisarIndice(tabela, chave);
-    
+
     if (indice == -1) {
         return 0;
     }
@@ -92,6 +89,7 @@ int remover (hash *tabela, int chave) {
     tabela->quantidade--;
 
     return 1;
+
 }
 
 int pesquisar(hash *tabela) {
@@ -107,8 +105,6 @@ int pesquisar(hash *tabela) {
         } else {
             printf("VAZIO\n");
         }
-=======
->>>>>>> 90e812f (primeiras adicioes)
     }
 }
 
