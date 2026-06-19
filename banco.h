@@ -1,5 +1,5 @@
 #ifndef BANCO_H
-#define BANCO_h
+#define BANCO_H
 
 
 #define NAME_SIZE 50
@@ -52,7 +52,19 @@ typedef struct Banco {
 } Banco;
 
 
-void inicializarBanco(Banco *banco);
-void liberarBanco(Banco *banco);
+void banco_inicializar(Banco *banco);
+void banco_liberar(Banco *banco);
+int banco_criar_conta(Banco *banco, const char *titular, int numero, int nif, double saldo);
+int banco_actualizar_conta(Banco *banco, int numero, const char *novoTitular, int novoNif);
+int banco_depositar(Banco *banco, int numero, double valor);
+int banco_levantar(Banco *banco, int numero, double valor);
+int banco_transferir(Banco *banco, int origem, int destino, double valor);
+Conta *banco_buscar_por_numero(Banco *banco, int numero);
+Conta *banco_buscar_por_nif(Banco *banco, int nif);
+void banco_listar_contas(Banco *banco);
+void banco_mostrar_extrato(Banco *banco, int numero);
+void banco_mostrar_estatisticas(Banco *banco);
+int banco_carregar_contas(Banco *banco, const char *caminho);
+int banco_guardar_relatorio(Banco *banco, const char *caminho);
 
 #endif

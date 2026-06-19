@@ -4,7 +4,7 @@
 #include "banco.h"
 
 
-static int ler_inteiro(const char *mensagem, int valor) {
+static int ler_inteiro(const char *mensagem, int *valor) {
     printf("%s", mensagem);
     if (scanf("%d", valor) != 1){
         int c;
@@ -23,6 +23,7 @@ static int ler_double(const char *mensagem, double *valor) {
         }
         return 0;
     }
+    return 1;
 }
 
 static void menu(void){
@@ -30,7 +31,7 @@ static void menu(void){
     printf("====== Sistema de Gestao Bancario ========\n");
     printf("1. Criar Conta\n");
     printf("2. Carregar contas de ficheiro\n");
-    printf("3.Atualizar conta\n");
+    printf("3. Atualizar conta\n");
     printf("4. Consultar Saldo por numero\n");
     printf("5. Depositar\n");
     printf("6. Levantar\n");
@@ -218,7 +219,7 @@ int main(void) {
 
         switch (opcao) {
             case 1:
-                criar_conta_manual(&banco);
+                criar_conta(&banco);
                 break;
             case 2:
                 carregar_ficheiro(&banco);

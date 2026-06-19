@@ -153,10 +153,10 @@ static int btree_dividir_filho(NoB *pai, int indice, NoB *filho) {
     cheio->quantidade = GRAU_MINIMO - 1;
 
     for (int j = pai->quantidade; j >= indice + 1; j--) {
-        pai->filhos[j + 1] = pai->filhos;
+        pai->filhos[j + 1] = pai->filhos[j];
     }
 
-    pai->contas[indice + 1] = novo;
+    pai->filhos[indice + 1] = novo;
     
     for (int j = pai->quantidade - 1; j >= indice; j--) {
         pai->contas[j + 1] = pai->contas[j];
@@ -238,7 +238,7 @@ static void movimentos_adicionar(Conta *conta, TipoMovimento tipo, double valor)
     conta->movimentos = novo;
 }
 
-void banco_inicializarBanco(Banco *banco) {
+void banco_inicializar(Banco *banco) {
     banco->raiz = NULL;
     banco->totalContas = 0;
 
@@ -247,7 +247,7 @@ void banco_inicializarBanco(Banco *banco) {
     }
 }
 
-int banco_criarConta(Banco *banco, int numero, int nif, const char *titular, double saldoInicial){
+int banco_criar_conta(Banco *banco, const char *titular, int numero, int nif, double saldoInicial) {
     Conta *conta;
 
     if (saldoInicial < 0 || banco_buscar_por_numero(banco, numero) != NULL || banco_buscar_por_nif(banco, nif) != NULL) {
@@ -287,7 +287,7 @@ int banco_criarConta(Banco *banco, int numero, int nif, const char *titular, dou
 }
 
 
-int banco_atualizar_conta(Banco *banco, int numero, const char * novoTitular, int novoNif) {
+int banco_actualizar_conta(Banco *banco, int numero, const char * novoTitular, int novoNif) {
     Conta *conta = banco_buscar_por_numero(banco, numero);
     Conta *donoNif;
     int nifAntigo;
@@ -320,6 +320,18 @@ int banco_depositar(Banco *banco, int numero, double valor) {
 
     conta->saldo += valor;
     movimentos_adicionar(conta, MOVIMENTO_DEPOSITO, valor);
+    return 1;
+}
+
+int banco_levantar(Banco *banco, int numero, double valor) {
+    Conta *conta = banco_buscar_por_numero(banco, numero);
+
+    if (conta == NULL || valor <= 0 || conta->saldo < valor) {
+        return 0;
+    }
+
+    conta->saldo -= valor;
+    movimentos_adicionar(conta, MOVIMENTO_LEVANTAMENTO, valor);
     return 1;
 }
 
@@ -521,7 +533,7 @@ static void movimentos_liberar(Movimento *movimento) {
     }
 }
 
-static btree_liberar(NoB *no) {
+static void btree_liberar(NoB *no) {
     if (no == NULL) {
         return;
     }

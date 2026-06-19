@@ -2,10 +2,10 @@
 #include "gb.h"
 
 static int hashFunction(int chave) {
-    int indice = chave % HASH_SIZE;
+    int indice = chave % GB_HASH_SIZE;
 
     if (indice < 0) {
-        indice += HASH_SIZE;
+        indice += GB_HASH_SIZE;
     }
 
     return indice;
@@ -14,8 +14,8 @@ static int hashFunction(int chave) {
 static int pesquisarIndice(hash *h, int chave) {
     int InitialIndex = hashFunction(chave);
 
-    for (int i = 0 ; i < HASH_SIZE; i++){
-        int indice = (InitialIndex + i) % HASH_SIZE;
+    for (int i = 0 ; i < GB_HASH_SIZE; i++){
+        int indice = (InitialIndex + i) % GB_HASH_SIZE;
 
         if (h->entradas[indice].estado == VAZIO) {
             return -1; // Chave não encontrada
@@ -27,8 +27,12 @@ static int pesquisarIndice(hash *h, int chave) {
     return -1; // Chave não encontrada
 }
 
+int buscar(hash *h, int chave) {
+    return pesquisarIndice(h, chave);
+}
+
 void inicializar(hash *h) {
-    for (int i = 0; i < HASH_SIZE; i++) {
+    for (int i = 0; i < GB_HASH_SIZE; i++) {
         h->entradas[i].estado = VAZIO;
         h->entradas[i].chave = 0;
     }
@@ -36,21 +40,19 @@ void inicializar(hash *h) {
 }
 
 int inserir(hash *h, int chave) {
-    if (h->quantidade == HASH_SIZE) {
+    if (h->quantidade == GB_HASH_SIZE) {
         return 0; // Tabela cheia
     }
 
-
     if (pesquisarIndice(h, chave) != -1) {
-    if (pesquisar(h, chave) != -1) {
         return 0; // Chave já existe
     }
 
     int InitialIndex = hashFunction(chave);
     int primeiroRemovido = -1;
 
-    for (int i = 0; i < HASH_SIZE; i++) {
-        int indice = (InitialIndex + i) % HASH_SIZE;
+    for (int i = 0; i < GB_HASH_SIZE; i++) {
+        int indice = (InitialIndex + i) % GB_HASH_SIZE;
 
         if (h->entradas[indice].estado == REMOVIDO && primeiroRemovido == -1) {
             primeiroRemovido = indice;
@@ -92,10 +94,10 @@ int remover(hash *tabela, int chave) {
 
 }
 
-int pesquisar(hash *tabela) {
-    printf("\nTabela Hash (Tamnho %d, ocupados %d):\n", HASH_SIZE, tabela->quantidade);
+void imprimir(hash *tabela) {
+    printf("\nTabela Hash (Tamnho %d, ocupados %d):\n", GB_HASH_SIZE, tabela->quantidade);
 
-    for (int i = 0; i < HASH_SIZE; i++) {
+    for (int i = 0; i < GB_HASH_SIZE; i++) {
         printf("[%02d] ", i);
         
         if (tabela->entradas[i].estado == OCUPADO) {
